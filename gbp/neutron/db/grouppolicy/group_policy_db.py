@@ -32,7 +32,11 @@ MAX_IPV4_SUBNET_PREFIX_LENGTH = 31
 MAX_IPV6_SUBNET_PREFIX_LENGTH = 127
 
 
-class Endpoint(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
+class GbpBase(model_base.BASEV2):
+    __table_args__ = {'schema': 'gbp_neutron'}
+
+
+class Endpoint(GbpBase, models_v2.HasId, models_v2.HasTenant):
     """Endpoint is the lowest unit of abstraction on which a policy is applied.
 
     This Endpoint is unrelated to the Endpoint terminology used in Keystone.
@@ -50,7 +54,7 @@ class Endpoint(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
                                   nullable=True)
 
 
-class EndpointGroupContractProvidingAssociation(model_base.BASEV2):
+class EndpointGroupContractProvidingAssociation(GbpBase):
     """Models  many to many providing relation between EPGs and Contracts."""
     __tablename__ = 'gp_endpoint_group_contract_providing_associations'
     contract_id = sa.Column(sa.String(36),
@@ -61,7 +65,7 @@ class EndpointGroupContractProvidingAssociation(model_base.BASEV2):
                                   primary_key=True)
 
 
-class EndpointGroupContractConsumingAssociation(model_base.BASEV2):
+class EndpointGroupContractConsumingAssociation(GbpBase):
     """Models many to many consuming relation between EPGs and Contracts."""
     __tablename__ = 'gp_endpoint_group_contract_consuming_associations'
     contract_id = sa.Column(sa.String(36),
@@ -72,7 +76,7 @@ class EndpointGroupContractConsumingAssociation(model_base.BASEV2):
                                   primary_key=True)
 
 
-class EndpointGroup(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
+class EndpointGroup(GbpBase, models_v2.HasId, models_v2.HasTenant):
     """Represents an Endpoint Group that is a collection of endpoints."""
     __tablename__ = 'gp_endpoint_groups'
     type = sa.Column(sa.String(15))
@@ -94,7 +98,7 @@ class EndpointGroup(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
         backref='consuming_endpoint_group', cascade='all, delete-orphan')
 
 
-class L2Policy(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
+class L2Policy(GbpBase, models_v2.HasId, models_v2.HasTenant):
     """Represents a L2 Policy for a collection of endpoint_groups."""
     __tablename__ = 'gp_l2_policies'
     type = sa.Column(sa.String(15))
@@ -110,7 +114,7 @@ class L2Policy(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
                              nullable=True)
 
 
-class L3Policy(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
+class L3Policy(GbpBase, models_v2.HasId, models_v2.HasTenant):
     """Represents a L3 Policy with a non-overlapping IP address space."""
     __tablename__ = 'gp_l3_policies'
     type = sa.Column(sa.String(15))
@@ -126,7 +130,7 @@ class L3Policy(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
     l2_policies = orm.relationship(L2Policy, backref='l3_policy')
 
 
-class ContractPolicyRuleAssociation(model_base.BASEV2):
+class ContractPolicyRuleAssociation(GbpBase):
     """Models the many to many relation between Contract and Policy rules."""
     __tablename__ = 'gp_contract_policy_rule_associations'
     contract_id = sa.Column(sa.String(36),
@@ -137,7 +141,7 @@ class ContractPolicyRuleAssociation(model_base.BASEV2):
                                primary_key=True)
 
 
-class PolicyRuleActionAssociation(model_base.BASEV2):
+class PolicyRuleActionAssociation(GbpBase):
     """Many to many relation between PolicyRules and PolicyActions."""
     __tablename__ = 'gp_policy_rule_action_associations'
     policy_rule_id = sa.Column(sa.String(36),
@@ -149,7 +153,7 @@ class PolicyRuleActionAssociation(model_base.BASEV2):
                                  primary_key=True)
 
 
-class PolicyRule(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
+class PolicyRule(GbpBase, models_v2.HasId, models_v2.HasTenant):
     """Represents a Group Policy Rule."""
     __tablename__ = 'gp_policy_rules'
     name = sa.Column(sa.String(50))
@@ -164,7 +168,7 @@ class PolicyRule(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
                                       cascade='all', lazy="joined")
 
 
-class PolicyClassifier(model_base.BASEV2, models_v2.HasId,
+class PolicyClassifier(GbpBase, models_v2.HasId,
                        models_v2.HasTenant):
     """Represents a Group Policy Classifier."""
     __tablename__ = 'gp_policy_classifiers'
@@ -183,7 +187,7 @@ class PolicyClassifier(model_base.BASEV2, models_v2.HasId,
                                     backref='gp_policy_classifiers')
 
 
-class PolicyAction(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
+class PolicyAction(GbpBase, models_v2.HasId, models_v2.HasTenant):
     """Represents a Group Policy Action."""
     __tablename__ = 'gp_policy_actions'
     name = sa.Column(sa.String(50))
@@ -199,7 +203,7 @@ class PolicyAction(model_base.BASEV2, models_v2.HasId, models_v2.HasTenant):
                                     cascade='all', backref='gp_policy_actions')
 
 
-class Contract(model_base.BASEV2, models_v2.HasTenant):
+class Contract(GbpBase, models_v2.HasTenant):
     """Represents a Contract that is a collection of Policy rules."""
     __tablename__ = 'gp_contracts'
     id = sa.Column(sa.String(36), primary_key=True,

@@ -32,7 +32,7 @@ class EndpointMapping(gpdb.Endpoint):
                         nullable=True, unique=True)
 
 
-class EndpointGroupSubnetAssociation(model_base.BASEV2):
+class EndpointGroupSubnetAssociation(gpdb.GbpBase):
     """Models the many to many relation between EndpointGroup and Subnets."""
     __tablename__ = 'gp_endpoint_group_subnet_associations'
     endpoint_group_id = sa.Column(sa.String(36),
@@ -58,7 +58,7 @@ class L2PolicyMapping(gpdb.L2Policy):
                            nullable=True, unique=True)
 
 
-class L3PolicyRouterAssociation(model_base.BASEV2):
+class L3PolicyRouterAssociation(gpdb.GbpBase):
     """Models the many to many relation between L3Policies and Routers."""
     __tablename__ = 'gp_l3_policy_router_associations'
     l3_policy_id = sa.Column(sa.String(36), sa.ForeignKey('gp_l3_policies.id'),

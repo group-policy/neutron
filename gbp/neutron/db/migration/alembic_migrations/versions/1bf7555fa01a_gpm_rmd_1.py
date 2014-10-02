@@ -35,34 +35,53 @@ def upgrade():
     op.create_table(
         'gpm_owned_networks',
         sa.Column('network_id', sa.String(length=36), nullable=False),
-        sa.ForeignKeyConstraint(['network_id'], ['networks.id'],
-                                ondelete='CASCADE'),
-        sa.PrimaryKeyConstraint('network_id')
+        sa.PrimaryKeyConstraint('network_id'),
+        mysql_DEFAULT_CHARSET='utf8'
     )
+
+    op.create_foreign_key('gpm_owned_networks_ibfk_1',
+                          source='gpm_owned_networks',
+                          referent='networks',
+                          local_cols=['network_id'], remote_cols=['id'],
+                          referent_schema='neutron')
 
     op.create_table(
         'gpm_owned_ports',
         sa.Column('port_id', sa.String(length=36), nullable=False),
-        sa.ForeignKeyConstraint(['port_id'], ['ports.id'],
-                                ondelete='CASCADE'),
-        sa.PrimaryKeyConstraint('port_id')
+        sa.PrimaryKeyConstraint('port_id'),
+        mysql_DEFAULT_CHARSET='utf8'
     )
+
+    op.create_foreign_key('gpm_owned_ports_ibfk_1',
+                          source='gpm_owned_ports',
+                          referent='ports',
+                          local_cols=['port_id'], remote_cols=['id'],
+                          referent_schema='neutron')
 
     op.create_table(
         'gpm_owned_subnets',
         sa.Column('subnet_id', sa.String(length=36), nullable=False),
-        sa.ForeignKeyConstraint(['subnet_id'], ['subnets.id'],
-                                ondelete='CASCADE'),
-        sa.PrimaryKeyConstraint('subnet_id')
+        sa.PrimaryKeyConstraint('subnet_id'),
+        mysql_DEFAULT_CHARSET='utf8'
     )
+
+    op.create_foreign_key('gpm_owned_subnets_ibfk_1',
+                          source='gpm_owned_subnets',
+                          referent='subnets',
+                          local_cols=['subnet_id'], remote_cols=['id'],
+                          referent_schema='neutron')
 
     op.create_table(
         'gpm_owned_routers',
         sa.Column('router_id', sa.String(length=36), nullable=False),
-        sa.ForeignKeyConstraint(['router_id'], ['routers.id'],
-                                ondelete='CASCADE'),
-        sa.PrimaryKeyConstraint('router_id')
+        sa.PrimaryKeyConstraint('router_id'),
+        mysql_DEFAULT_CHARSET='utf8'
     )
+    op.create_foreign_key('gpm_owned_routers_ibfk_1',
+                          source='gpm_owned_routers',
+                          referent='routers',
+                          local_cols=['router_id'], remote_cols=['id'],
+                          referent_schema='neutron')
 
 
 def downgrade():
